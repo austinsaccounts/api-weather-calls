@@ -3,21 +3,25 @@ import $ from "jquery";
 
 $(document).ready(function() {
   $('#weatherLocation').click(function() {
-      let city =$('#location').val();
+      const city =$('#location').val();
       $('#location').val('');
-        $.ajax({
-          url: 'http://openweathermap.org/data/2.5/weather?zip=97213,us&appid=b6907d289e10d714a6e88b30761fae22',
-          type: 'GET',
-          data: {
-            format: 'json'
-          },
-          success: function(response) {
-            $('.showHumidity').text(`the humidity in ${city} is ${response.main.humidity}%`);
-            $('.showTemp').text(`the temperature in kelvins is ${response.main.temp}.`);
-          },
-          error: function() {
-            $('#errors').text("there was a problem processing your request, please try again.");
-          }
-      });
+
+      let request = new XMLHttpRequest();
+    const url = `http://openweathermap.org/data/2.5/weather?q=${city},us&appid=b6907d289e10d714a6e88b30761fae22`;
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        const response = JSON.parse(this.responseText);
+        getElements(response);
+      }
+    }
+
+    request.open("GET", url, true);
+    request.send();
+
+   const getElements = function(response) {
+      $('.showHumidity').text(`The humidity in ${response.name} is ${response.main.humidity}%`);
+      $('.showTemp').text(`The temperature in Kelvins is ${response.main.temp} degrees.`);
+    }
   });
 });
